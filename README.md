@@ -37,11 +37,11 @@ Usage
 -----
 
 Run script with: 
-		 
-		 `python gmail-deleter.py`
+	
+	`python gmail-deleter.py`
 		 
 - For Python3 run: 
-		 
-		 `python3 gmail-deleter.py`
+	
+	`python3 gmail-deleter.py`
 
 
