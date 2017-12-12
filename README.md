@@ -36,12 +36,13 @@ Installation
 Usage
 -----
 
-Run script with: 
-	
-	`python gmail-deleter.py`
-		 
-- For Python3 run: 
-	
-	`python3 gmail-deleter.py`
 
+Run script with:
 
+- Python2: 
+
+`python gmail-deleter.py`  
+
+- Python3:
+
+`python3 gmail-deleter.py`
