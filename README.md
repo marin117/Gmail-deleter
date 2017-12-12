@@ -41,8 +41,8 @@ Run script with:
 
 - Python2: 
 
-`python gmail-deleter.py`  
+`python gmail-delete.py`  
 
 - Python3:
 
-`python3 gmail-deleter.py`
+`python3 gmail-delete.py`
