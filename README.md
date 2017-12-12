@@ -3,7 +3,7 @@
 Getting started
 ---------------
 
-	This script will help you to delete unnecessary emails on gmail. It will provide you options to delete all mails, mails from certain category and mails from certain user . It also has an option to empty trash or delete spam mails. 
+This script will help you to delete unnecessary emails on gmail. It will provide you options to delete all mails, mails from certain category and mails from certain user . It also has an option to empty trash or delete spam mails. 
 
 
 Prerequisites
@@ -24,8 +24,11 @@ Installation
 
  - Optional: Create a virtual environment 
  - Run: 
+   
    `pip install --upgrade google-api-python-client`
+ 
  - For python3 run: 
+   
    `pip3 install --upgrade google-api-python-client`
  
 (Check requirements.txt for additional informations about requirments for installation)
@@ -34,9 +37,11 @@ Usage
 -----
 
 Run script with: 
+		 
 		 `python gmail-deleter.py`
 		 
 - For Python3 run: 
+		 
 		 `python3 gmail-deleter.py`
 
 
