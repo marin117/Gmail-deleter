@@ -21,7 +21,7 @@ except ImportError:
 # at ~/.credentials/gmail-python-quickstart.json
 SCOPES = 'https://mail.google.com'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
+APPLICATION_NAME = 'Gmail API Python'
 
 
 def get_credentials():
@@ -117,6 +117,39 @@ def ListMessagesWithLabels(service, user_id, label_ids=[]):
         print('An error occurred: %s' % error)
 
 
+def ListMessagesMatchingQuery(service, user_id, query=''):
+    """List all Messages of the user's mailbox matching the query.
+
+    Args:
+      service: Authorized Gmail API service instance.
+      user_id: User's email address. The special value "me"
+      can be used to indicate the authenticated user.
+      query: String used to filter messages returned.
+      Eg.- 'from:user@some_domain.com' for Messages from a particular sender.
+
+    Returns:
+      List of Messages that match the criteria of the query. Note that the
+      returned list contains Message IDs, you must use get with the
+      appropriate ID to get the details of a Message.
+    """
+    try:
+        response = service.users().messages().list(userId=user_id,
+                                                   q=query).execute()
+        messages = []
+        if 'messages' in response:
+            messages.extend(response['messages'])
+
+        while 'nextPageToken' in response:
+            page_token = response['nextPageToken']
+            response = service.users().messages().list(userId=user_id, q=query,
+                                                       pageToken=page_token).execute()
+            messages.extend(response['messages'])
+
+        return messages
+    except errors.HttpError as error:
+        print('An error occurred: %s' % error)
+
+
 def GetMessage(service, user_id, msg_id):
     """Get a Message with given ID.
 
@@ -148,7 +181,7 @@ def main():
     while True:
         print("""
 1. Delete all messages
-2. Delete messages from label
+2. Delete messages from category
 3. Delete messages from specifed user
 4. Empty trash
 5. Empty spam
@@ -157,8 +190,8 @@ def main():
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = ListMessagesWithLabels(
-                    service, 'me', 'INBOX')
+                messages = ListMessagesMatchingQuery(
+                    service, 'me', 'label:all')
                 for message in messages:
                     delete = DeleteMessagePerm(service, 'me', message['id'])
             elif choice == 2:
@@ -168,15 +201,23 @@ def main():
                     print(str(i+1) + ': ' + label['name'])
                 try:
                     label_choice = int(input('Choose label for deletion: '))
+                    if label_choice <= 0 or label_choice >= len(labels) + 1:
+                        print("Invalid input! Try again")
+                        continue
                 except ValueError:
                     print('Invalid input! Try again')
                     continue
                 messages = ListMessagesWithLabels(
-                    service, 'me', labels[label_choice-1]['name'])
+                    service, 'me', labels[label_choice-1]['id'])
                 for message in messages:
                     delete = DeleteMessage(service, 'me', message['id'])
             elif choice == 3:
-                print("Delete messages from user")
+                user_choice = str(
+                    input('Choose user whose messages you want to delete: '))
+                messages = ListMessagesMatchingQuery(
+                    service, 'me', 'from:' + user_choice)
+                for message in messages:
+                    delete = DeleteMessage(service, 'me', message['id'])
             elif choice == 4:
                 messages = ListMessagesWithLabels(
                     service, 'me', 'TRASH')
