@@ -36,6 +36,8 @@ Installation
 Usage
 -----
 
+ - Copy json file generated from Gmail API to the repository directory 
+
 
 Run script with:
 

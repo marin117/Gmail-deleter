@@ -24,7 +24,7 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Python'
 
 
-def get_credentials():
+def GetCredentials():
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -38,7 +38,7 @@ def get_credentials():
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
-                                   'gmail-python-quickstart.json')
+                                   'gmail-delete.json')
 
     store = Storage(credential_path)
     credentials = store.get()
@@ -174,7 +174,7 @@ def GetMessage(service, user_id, msg_id):
 
 def main():
 
-    credentials = get_credentials()
+    credentials = GetCredentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
 
