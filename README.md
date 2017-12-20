@@ -38,6 +38,4 @@ Usage
 
 Run script with:
 
-- Python3:
-
 `python3 gmail-delete.py`
