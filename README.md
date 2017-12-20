@@ -9,8 +9,8 @@ This script will help you to delete unnecessary emails on gmail. It will provide
 Prerequisites
 -------------
 
- - Python 2.6 or greater (Python3 recommended)
- - The [pip](https://pypi.python.org/pypi/pip) package managment tool (for both Python2 and Python3)
+ - Python3 
+ - The [pip](https://pypi.python.org/pypi/pip) package managment tool for Python3
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
 
@@ -23,11 +23,8 @@ Installation
 ------------
 
  - Optional: Create a virtual environment 
- - Run: 
-   
-   `pip install --upgrade google-api-python-client`
  
- - For python3 run: 
+ - Run: 
    
    `pip3 install --upgrade google-api-python-client`
  
@@ -40,10 +37,6 @@ Usage
 
 
 Run script with:
-
-- Python2: 
-
-`python gmail-delete.py`  
 
 - Python3:
 
