@@ -13,6 +13,8 @@ Prerequisites
  - The [pip](https://pypi.python.org/pypi/pip) package managment tool for Python3
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
+ - matplotlib for Python3 
+
 
 Turn on Gmail API
 -----------------
@@ -27,7 +29,8 @@ Installation
  - Run: 
    
    `pip3 install --upgrade google-api-python-client`
- 
+    
+
 (Check requirements.txt for additional informations about requirments for installation)
 
 Usage

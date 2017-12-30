@@ -10,8 +10,8 @@ from oauth2client import tools
 from oauth2client.file import Storage
 from apiclient import errors
 from apiclient.discovery import build
-
 import matplotlib.pyplot as plt
+
 
 try:
     import argparse
@@ -175,21 +175,22 @@ def GetMessage(service, user_id, msg_id):
 
 
 def GetSender(message, interest):
-	"""Get sender of an email.
+    """Get sender of an email.
 
-	Args:
-		message: Email returned form GetMessage function.
+    Args:
+            message: Email returned form GetMessage function.
 
-	Returns:
-		The sender of a given message
-	"""	
-	for sender in message['payload']['headers']:
-		if sender['name'] == interest:
-			posiljatelj = sender['value'].split(" ")
-			if len(posiljatelj) > 1: 
-				posiljatelj = posiljatelj[:-1] 
-			posiljatelj = ''.join(posiljatelj) 
-	return posiljatelj
+    Returns:
+            The sender of a given message
+    """
+    for sender in message['payload']['headers']:
+        if sender['name'].lower() == interest.lower():
+            sender_name = sender['value'].split(" ")
+            if len(sender_name) > 1:
+                sender_name = sender_name[:-1]
+                sender_name = ''.join(sender_name)
+                return sender_name
+
 
 def main():
 
@@ -249,38 +250,38 @@ def main():
                 for message in messages:
                     delete = DeleteMessagePerm(service, 'me', message['id'])
             elif choice == 6:
-            	
-            	print("""
+                print("""
 1. Statistics for received mail
 2. Statistics for sent mail
         """)
 
-            	try:
-            		izbor = int(input('Choose an option: '))
-            		if izbor == 1:
-            			decision = 'INBOX'
-            			interest = 'FROM'
-            		elif izbor == 2:
-            			decision = 'SENT'
-            			interest = 'To'
-            		else:
-            			sys.exit(1)
-            	except ValueError:
-            		print('Invalid input! Try again')
+                try:
+                    statistic_choice = int(input('Choose an option: '))
+                    if statistic_choice == 1:
+                        decision = 'INBOX'
+                        interest = 'FROM'
+                    elif statistic_choice == 2:
+                        decision = 'SENT'
+                        interest = 'To'
+                    else:
+                        sys.exit(1)
+                except ValueError:
+                    print('Invalid input! Try again')
 
-            	statistika = dict()
-            	messages = ListMessagesWithLabels(
-            		service, 'me', decision)
-            	for message in messages:
-            		poruka = GetMessage(service, 'me', message['id'])
-            		posiljatelj = GetSender(poruka, interest)
-            		if posiljatelj in statistika:
-            			statistika[posiljatelj] += 1
-            		else:
-            			statistika[posiljatelj] = 1
-            	print (statistika)
-            	plt.bar(statistika.keys(), statistika.values())
-            	plt.show()
+                statistic = dict()
+                messages = ListMessagesWithLabels(
+                    service, 'me', decision)
+                for message in messages:
+                    message_info = GetMessage(
+                        service, 'me', message['id'])
+                    sender = GetSender(message_info, interest)
+                    if sender in statistic:
+                        statistic[sender] += 1
+                    else:
+                        statistic[sender] = 1
+                #print(statistic)
+                plt.bar(statistic.keys(), statistic.values())
+                plt.show()
             else:
                 sys.exit(1)
         except ValueError:
