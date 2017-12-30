@@ -11,6 +11,8 @@ from oauth2client.file import Storage
 from apiclient import errors
 from apiclient.discovery import build
 
+import matplotlib.pyplot as plt
+
 try:
     import argparse
     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -165,12 +167,29 @@ def GetMessage(service, user_id, msg_id):
     try:
         message = service.users().messages().get(userId=user_id, id=msg_id).execute()
 
-        print('Message snippet: %s' % message['snippet'])
+        """print('Message snippet: %s' % message['snippet'])"""
 
         return message
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
+
+def GetSender(message, interest):
+	"""Get sender of an email.
+
+	Args:
+		message: Email returned form GetMessage function.
+
+	Returns:
+		The sender of a given message
+	"""	
+	for sender in message['payload']['headers']:
+		if sender['name'] == interest:
+			posiljatelj = sender['value'].split(" ")
+			if len(posiljatelj) > 1: 
+				posiljatelj = posiljatelj[:-1] 
+			posiljatelj = ''.join(posiljatelj) 
+	return posiljatelj
 
 def main():
 
@@ -185,7 +204,8 @@ def main():
 3. Delete messages from specifed user
 4. Empty trash
 5. Empty spam
-6. Exit
+6. Statistics
+7. Exit
         """)
         try:
             choice = int(input('Choose an option: '))
@@ -228,6 +248,39 @@ def main():
                     service, 'me', 'SPAM')
                 for message in messages:
                     delete = DeleteMessagePerm(service, 'me', message['id'])
+            elif choice == 6:
+            	
+            	print("""
+1. Statistics for received mail
+2. Statistics for sent mail
+        """)
+
+            	try:
+            		izbor = int(input('Choose an option: '))
+            		if izbor == 1:
+            			decision = 'INBOX'
+            			interest = 'FROM'
+            		elif izbor == 2:
+            			decision = 'SENT'
+            			interest = 'To'
+            		else:
+            			sys.exit(1)
+            	except ValueError:
+            		print('Invalid input! Try again')
+
+            	statistika = dict()
+            	messages = ListMessagesWithLabels(
+            		service, 'me', decision)
+            	for message in messages:
+            		poruka = GetMessage(service, 'me', message['id'])
+            		posiljatelj = GetSender(poruka, interest)
+            		if posiljatelj in statistika:
+            			statistika[posiljatelj] += 1
+            		else:
+            			statistika[posiljatelj] = 1
+            	print (statistika)
+            	plt.bar(statistika.keys(), statistika.values())
+            	plt.show()
             else:
                 sys.exit(1)
         except ValueError:
