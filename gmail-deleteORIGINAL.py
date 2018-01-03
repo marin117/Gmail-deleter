@@ -10,9 +10,7 @@ from oauth2client import tools
 from oauth2client.file import Storage
 from apiclient import errors
 from apiclient.discovery import build
-
 import matplotlib.pyplot as plt
-import collections
 
 
 try:
@@ -183,7 +181,7 @@ def GetSender(message, interest):
             message: Email returned form GetMessage function.
 
     Returns:
-            The sender of a given message.
+            The sender of a given message
     """
     for sender in message['payload']['headers']:
         if sender['name'].lower() == interest.lower():
@@ -193,65 +191,6 @@ def GetSender(message, interest):
                 sender_name = ''.join(sender_name)
                 return sender_name
 
-def GetStatisticForUser(service, user_id, decision, interest):
-    """Get all the statistic for sent/received mail based on users choice.
-
-    Args:
-            service: Authorized Gmail API service instance.
-            user_id: User's email address. The special value "me".
-            decision: 'INBOX' or 'SENT'. Defines if we want statistics for sent or received mail.
-            interest: 'FROM' or 'To'. Based on the 'decision' arg, it tells the 'GetSender' if we are
-                        interested in the 'FROM' or 'To' field of email headers
-
-    Returns:
-            Nothing.
-    """
-    statistic = dict()
-    messages = ListMessagesWithLabels(
-        service, user_id, decision)
-    for message in messages:
-        message_info = GetMessage(
-            service, user_id, message['id'])
-        sender = GetSender(message_info, interest)
-        if sender in statistic:
-            statistic[sender] += 1
-        else:
-            statistic[sender] = 1
-    #print(statistic)
-    plt.bar(statistic.keys(), statistic.values())
-    plt.xticks(rotation = 'vertical')
-    plt.tight_layout()
-    plt.show()
-
-def GetStatisticForMailSize(service, user_id, label_choice):
-    """Get the statistic for sent/received mail based on mail size.
-
-    Args:
-            service: Authorized Gmail API service instance.
-            user_id: User's email address. The special value "me".
-            label_choice: Mailbox we are interested in. Usually 'INBOX' or 'SENT'.
-
-    Returns:
-            Nothing.
-    """
-    statistic = collections.OrderedDict ()
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:1mb'))
-    statistic['<1mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:5mb' + ' larger:1mb'))
-    statistic['1mb<x<5mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:10mb' + ' larger:5mb'))
-    statistic['5mb<x<10mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:25mb' + ' larger:10mb'))
-    statistic['10mb<x<25mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:50mb' + ' larger:25mb'))
-    statistic['25mb<x<50mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' larger:50mb'))
-    statistic['>50mb'] = len(messages)
-    #print (statistic)
-    plt.bar(statistic.keys(), statistic.values())
-    plt.xticks(rotation = 'vertical')
-    plt.tight_layout()
-    plt.show()
 
 def main():
 
@@ -314,26 +253,35 @@ def main():
                 print("""
 1. Statistics for received mail
 2. Statistics for sent mail
-3. Statistics for received mail size
-4. Statistics for sent mail size
         """)
 
                 try:
                     statistic_choice = int(input('Choose an option: '))
                     if statistic_choice == 1:
-                        GetStatisticForUser (service, 'me', 'INBOX', 'FROM')
+                        decision = 'INBOX'
+                        interest = 'FROM'
                     elif statistic_choice == 2:
-                        GetStatisticForUser (service, 'me', 'SENT', 'To')
-                    elif statistic_choice == 3:
-                        GetStatisticForMailSize (service, 'me', 'INBOX')
-                    elif statistic_choice == 4:
-                        GetStatisticForMailSize (service, 'me', 'SENT')
+                        decision = 'SENT'
+                        interest = 'To'
                     else:
                         sys.exit(1)
                 except ValueError:
                     print('Invalid input! Try again')
 
-                
+                statistic = dict()
+                messages = ListMessagesWithLabels(
+                    service, 'me', decision)
+                for message in messages:
+                    message_info = GetMessage(
+                        service, 'me', message['id'])
+                    sender = GetSender(message_info, interest)
+                    if sender in statistic:
+                        statistic[sender] += 1
+                    else:
+                        statistic[sender] = 1
+                #print(statistic)
+                plt.bar(statistic.keys(), statistic.values())
+                plt.show()
             else:
                 sys.exit(1)
         except ValueError:
