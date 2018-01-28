@@ -188,10 +188,16 @@ def GetSender(message, interest):
     for sender in message['payload']['headers']:
         if sender['name'].lower() == interest.lower():
             sender_name = sender['value'].split(" ")
-            if len(sender_name) > 1:
-                sender_name = sender_name[:-1]
-                sender_name = ''.join(sender_name)
-                return sender_name
+            for values in sender_name:
+                if '@' in values:
+                    if '<' in values:
+                        value = values.lstrip('<')
+                        value = value.rstrip('>')
+                        #print(value)
+                        return value
+                    #print(values)
+                    return values
+
 
 def GetStatisticForUser(service, user_id, decision, interest):
     """Get all the statistic for sent/received mail based on users choice.
@@ -323,7 +329,7 @@ def main():
                     if statistic_choice == 1:
                         GetStatisticForUser (service, 'me', 'INBOX', 'FROM')
                     elif statistic_choice == 2:
-                        GetStatisticForUser (service, 'me', 'SENT', 'To')
+                        GetStatisticForUser (service, 'me', 'SENT', 'TO')
                     elif statistic_choice == 3:
                         GetStatisticForMailSize (service, 'me', 'INBOX')
                     elif statistic_choice == 4:
@@ -333,7 +339,6 @@ def main():
                 except ValueError:
                     print('Invalid input! Try again')
 
-                
             else:
                 sys.exit(1)
         except ValueError:
