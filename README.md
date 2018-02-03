@@ -3,7 +3,7 @@
 Getting started
 ---------------
 
-This script will help you to delete unnecessary emails on gmail. It will provide you options to delete all mails, mails from certain category and mails from certain user . It also has an option to empty trash or delete spam mails. 
+This script will help you to delete unnecessary emails on gmail. It will provide you options to delete all mails, mails from certain category and mails from certain user . It also has an option to empty trash or delete spam mails or get statistics for size of the mail, or frequency of sent/received mails from/to certain user.
 
 
 Prerequisites
