@@ -105,18 +105,18 @@ def list_messages_with_label(service, user_id, label_ids=[]):
     try:
         response = service.users().messages().list(userId=user_id,
                                                    labelIds=label_ids).execute()
-        messages = []
-        if 'messages' in response:
-            messages.extend(response['messages'])
+        if 'messages'in response:
+            for message in response['messages']:
+                yield message
 
         while 'next_page_token' in response:
             page_token = response['next_page_token']
             response = service.users().messages().list(userId=user_id,
                                                        labelIds=label_ids,
                                                        page_token=page_token).execute()
-            messages.extend(response['messages'])
-
-        return messages
+            if 'messages'in response:
+                for message in response['messages']:
+                    yield message
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
@@ -295,9 +295,7 @@ def main():
                 except ValueError:
                     print('Invalid input! Try again')
                     continue
-                messages = list_messages_with_label(
-                    service, 'me', labels[label_choice-1]['id'])
-                for message in messages:
+                for message in list_messages_with_label(service, 'me', labels[label_choice-1]['id']):
                     delete = delete_message(service, 'me', message['id'])
             elif choice == 3:
                 user_choice = str(
