@@ -28,7 +28,7 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Python'
 
 
-def GetCredentials():
+def get_credentials():
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -57,7 +57,7 @@ def GetCredentials():
     return credentials
 
 
-def BuildService(credentials):
+def build_service(credentials):
     """Build a Gmail service object.
 
     Args:
@@ -71,7 +71,7 @@ def BuildService(credentials):
     return build('gmail', 'v1', http=http)
 
 
-def DeleteMessage(service, user_id, msg_id):
+def delete_message(service, user_id, msg_id):
     try:
         response = service.users().messages().trash(userId=user_id, id=msg_id).execute()
         return response
@@ -79,7 +79,7 @@ def DeleteMessage(service, user_id, msg_id):
         print('An error occurred: %s' % error)
 
 
-def DeleteMessagePerm(service, user_id, msg_id):
+def delete_message_prem(service, user_id, msg_id):
     try:
         response = service.users().messages().delete(
             userId=user_id, id=msg_id).execute()
@@ -88,14 +88,14 @@ def DeleteMessagePerm(service, user_id, msg_id):
         print('An error occurred: %s' % error)
 
 
-def ListMessagesWithLabels(service, user_id, label_ids=[]):
-    """List all Messages of the user's mailbox with label_ids applied.
+def list_messages_with_label(service, user_id, label_ids=[]):
+    """List all Messages of the user's mailbox with labelIds applied.
 
     Args:
       service: Authorized Gmail API service instance.
       user_id: User's email address. The special value "me"
       can be used to indicate the authenticated user.
-      label_ids: Only return Messages with these labelIds applied.
+      labelIds: Only return Messages with these labelIds applied.
 
     Returns:
       List of Messages that have all required Labels applied. Note that the
@@ -109,11 +109,11 @@ def ListMessagesWithLabels(service, user_id, label_ids=[]):
         if 'messages' in response:
             messages.extend(response['messages'])
 
-        while 'nextPageToken' in response:
-            page_token = response['nextPageToken']
+        while 'next_page_token' in response:
+            page_token = response['next_page_token']
             response = service.users().messages().list(userId=user_id,
                                                        labelIds=label_ids,
-                                                       pageToken=page_token).execute()
+                                                       page_token=page_token).execute()
             messages.extend(response['messages'])
 
         return messages
@@ -121,7 +121,7 @@ def ListMessagesWithLabels(service, user_id, label_ids=[]):
         print('An error occurred: %s' % error)
 
 
-def ListMessagesMatchingQuery(service, user_id, query=''):
+def list_messages_matching_query(service, user_id, query=''):
     """List all Messages of the user's mailbox matching the query.
 
     Args:
@@ -143,10 +143,10 @@ def ListMessagesMatchingQuery(service, user_id, query=''):
         if 'messages' in response:
             messages.extend(response['messages'])
 
-        while 'nextPageToken' in response:
-            page_token = response['nextPageToken']
+        while 'next_page_token' in response:
+            page_token = response['next_page_token']
             response = service.users().messages().list(userId=user_id, q=query,
-                                                       pageToken=page_token).execute()
+                                                       page_token=page_token).execute()
             messages.extend(response['messages'])
 
         return messages
@@ -154,7 +154,7 @@ def ListMessagesMatchingQuery(service, user_id, query=''):
         print('An error occurred: %s' % error)
 
 
-def GetMessage(service, user_id, msg_id):
+def get_message(service, user_id, msg_id):
     """Get a Message with given ID.
 
     Args:
@@ -176,11 +176,11 @@ def GetMessage(service, user_id, msg_id):
         print('An error occurred: %s' % error)
 
 
-def GetSender(message, interest):
+def get_sender(message, interest):
     """Get sender of an email.
 
     Args:
-            message: Email returned form GetMessage function.
+            message: Email returned form get_message function.
 
     Returns:
             The sender of a given message.
@@ -199,26 +199,26 @@ def GetSender(message, interest):
                     return values
 
 
-def GetStatisticForUser(service, user_id, decision, interest):
+def get_statistic_for_user(service, user_id, decision, interest):
     """Get all the statistic for sent/received mail based on users choice.
 
     Args:
             service: Authorized Gmail API service instance.
             user_id: User's email address. The special value "me".
             decision: 'INBOX' or 'SENT'. Defines if we want statistics for sent or received mail.
-            interest: 'FROM' or 'To'. Based on the 'decision' arg, it tells the 'GetSender' if we are
+            interest: 'FROM' or 'To'. Based on the 'decision' arg, it tells the 'get_sender' if we are
                         interested in the 'FROM' or 'To' field of email headers
 
     Returns:
             Nothing.
     """
     statistic = dict()
-    messages = ListMessagesWithLabels(
+    messages = list_messages_with_label(
         service, user_id, decision)
     for message in messages:
-        message_info = GetMessage(
+        message_info = get_message(
             service, user_id, message['id'])
-        sender = GetSender(message_info, interest)
+        sender = get_sender(message_info, interest)
         if sender in statistic:
             statistic[sender] += 1
         else:
@@ -229,7 +229,7 @@ def GetStatisticForUser(service, user_id, decision, interest):
     plt.tight_layout()
     plt.show()
 
-def GetStatisticForMailSize(service, user_id, label_choice):
+def get_statistics_for_mail_size(service, user_id, label_choice):
     """Get the statistic for sent/received mail based on mail size.
 
     Args:
@@ -241,17 +241,17 @@ def GetStatisticForMailSize(service, user_id, label_choice):
             Nothing.
     """
     statistic = collections.OrderedDict ()
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:1mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' smaller_than:1mb'))
     statistic['<1mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:5mb' + ' larger:1mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' smaller_than:5mb' + ' larger:1mb'))
     statistic['1mb<x<5mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:10mb' + ' larger:5mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' smaller_than:10mb' + ' larger:5mb'))
     statistic['5mb<x<10mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:25mb' + ' larger:10mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' smaller_than:25mb' + ' larger:10mb'))
     statistic['10mb<x<25mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' smaller_than:50mb' + ' larger:25mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' smaller_than:50mb' + ' larger:25mb'))
     statistic['25mb<x<50mb'] = len(messages)
-    messages = ListMessagesMatchingQuery(service, user_id, ('label:' + label_choice + ' larger:50mb'))
+    messages = list_messages_matching_query(service, user_id, ('label:' + label_choice + ' larger:50mb'))
     statistic['>50mb'] = len(messages)
     #print (statistic)
     plt.bar(statistic.keys(), statistic.values())
@@ -261,7 +261,7 @@ def GetStatisticForMailSize(service, user_id, label_choice):
 
 def main():
 
-    credentials = GetCredentials()
+    credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
 
@@ -278,10 +278,10 @@ def main():
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = ListMessagesMatchingQuery(
+                messages = list_messages_matching_query(
                     service, 'me', 'label:all')
                 for message in messages:
-                    delete = DeleteMessagePerm(service, 'me', message['id'])
+                    delete = delete_message_prem(service, 'me', message['id'])
             elif choice == 2:
                 label_result = service.users().labels().list(userId='me').execute()
                 labels = label_result.get('labels', [])
@@ -295,27 +295,27 @@ def main():
                 except ValueError:
                     print('Invalid input! Try again')
                     continue
-                messages = ListMessagesWithLabels(
+                messages = list_messages_with_label(
                     service, 'me', labels[label_choice-1]['id'])
                 for message in messages:
-                    delete = DeleteMessage(service, 'me', message['id'])
+                    delete = delete_message(service, 'me', message['id'])
             elif choice == 3:
                 user_choice = str(
                     input('Choose user whose messages you want to delete: '))
-                messages = ListMessagesMatchingQuery(
+                messages = list_messages_matching_query(
                     service, 'me', 'from:' + user_choice)
                 for message in messages:
-                    delete = DeleteMessage(service, 'me', message['id'])
+                    delete = delete_message(service, 'me', message['id'])
             elif choice == 4:
-                messages = ListMessagesWithLabels(
+                messages = list_messages_with_label(
                     service, 'me', 'TRASH')
                 for message in messages:
-                    delete = DeleteMessagePerm(service, 'me', message['id'])
+                    delete = delete_message_prem(service, 'me', message['id'])
             elif choice == 5:
-                messages = ListMessagesWithLabels(
+                messages = list_messages_with_label(
                     service, 'me', 'SPAM')
                 for message in messages:
-                    delete = DeleteMessagePerm(service, 'me', message['id'])
+                    delete = delete_message_prem(service, 'me', message['id'])
             elif choice == 6:
                 print("""
 1. Statistics for received mail
@@ -327,13 +327,13 @@ def main():
                 try:
                     statistic_choice = int(input('Choose an option: '))
                     if statistic_choice == 1:
-                        GetStatisticForUser (service, 'me', 'INBOX', 'FROM')
+                        get_statistic_for_user(service, 'me', 'INBOX', 'FROM')
                     elif statistic_choice == 2:
-                        GetStatisticForUser (service, 'me', 'SENT', 'TO')
+                        get_statistic_for_user(service, 'me', 'SENT', 'TO')
                     elif statistic_choice == 3:
-                        GetStatisticForMailSize (service, 'me', 'INBOX')
+                        get_statistics_for_mail_size(service, 'me', 'INBOX')
                     elif statistic_choice == 4:
-                        GetStatisticForMailSize (service, 'me', 'SENT')
+                        get_statistics_for_mail_size(service, 'me', 'SENT')
                     else:
                         sys.exit(1)
                 except ValueError:
