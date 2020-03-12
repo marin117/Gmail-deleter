@@ -79,7 +79,7 @@ def delete_message(service, user_id, msg_id):
         print('An error occurred: %s' % error)
 
 
-def delete_message_prem(service, user_id, msg_id):
+def delete_message_perm(service, user_id, msg_id):
     try:
         response = service.users().messages().delete(
             userId=user_id, id=msg_id).execute()
@@ -109,11 +109,11 @@ def list_messages_with_label(service, user_id, label_ids=[]):
             for message in response['messages']:
                 yield message
 
-        while 'next_page_token' in response:
-            page_token = response['next_page_token']
+        while 'nextPageToken' in response:
+            page_token = response['nextPageToken']
             response = service.users().messages().list(userId=user_id,
                                                        labelIds=label_ids,
-                                                       page_token=page_token).execute()
+                                                       pageToken=page_token).execute()
             if 'messages'in response:
                 for message in response['messages']:
                     yield message
@@ -139,17 +139,17 @@ def list_messages_matching_query(service, user_id, query=''):
     try:
         response = service.users().messages().list(userId=user_id,
                                                    q=query).execute()
-        messages = []
         if 'messages' in response:
-            messages.extend(response['messages'])
+            for message in response['messages']:
+                yield message
 
-        while 'next_page_token' in response:
-            page_token = response['next_page_token']
+        while 'nextPageToken' in response:
+            page_token = response['nextPageToken']
             response = service.users().messages().list(userId=user_id, q=query,
-                                                       page_token=page_token).execute()
-            messages.extend(response['messages'])
+                                                       pageToken=page_token).execute()
+            for message in response['messages']:
+                    yield message
 
-        return messages
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
@@ -193,9 +193,7 @@ def get_sender(message, interest):
                     if '<' in values:
                         value = values.lstrip('<')
                         value = value.rstrip('>')
-                        #print(value)
                         return value
-                    #print(values)
                     return values
 
 
@@ -269,7 +267,7 @@ def main():
         print("""
 1. Delete all messages
 2. Delete messages from category
-3. Delete messages from specifed user
+3. Delete messages from specific user
 4. Empty trash
 5. Empty spam
 6. Statistics
@@ -281,7 +279,7 @@ def main():
                 messages = list_messages_matching_query(
                     service, 'me', 'label:all')
                 for message in messages:
-                    delete = delete_message_prem(service, 'me', message['id'])
+                    delete = delete_message_perm(service, 'me', message['id'])
             elif choice == 2:
                 label_result = service.users().labels().list(userId='me').execute()
                 labels = label_result.get('labels', [])
@@ -300,20 +298,14 @@ def main():
             elif choice == 3:
                 user_choice = str(
                     input('Choose user whose messages you want to delete: '))
-                messages = list_messages_matching_query(
-                    service, 'me', 'from:' + user_choice)
-                for message in messages:
+                for message in list_messages_matching_query(service, 'me', 'from:' + user_choice):
                     delete = delete_message(service, 'me', message['id'])
             elif choice == 4:
-                messages = list_messages_with_label(
-                    service, 'me', 'TRASH')
-                for message in messages:
-                    delete = delete_message_prem(service, 'me', message['id'])
+                for message in list_messages_with_label(service, 'me', 'TRASH'):
+                    delete = delete_message_perm(service, 'me', message['id'])
             elif choice == 5:
-                messages = list_messages_with_label(
-                    service, 'me', 'SPAM')
-                for message in messages:
-                    delete = delete_message_prem(service, 'me', message['id'])
+                for message in list_messages_with_label(service, 'me', 'SPAM'):
+                    delete = delete_message_perm(service, 'me', message['id'])
             elif choice == 6:
                 print("""
 1. Statistics for received mail
