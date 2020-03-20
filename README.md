@@ -28,7 +28,7 @@ Installation
  
  - Run: 
    
-   `pip3 install --upgrade google-api-python-client`
+   `pip install --upgrade google-api-python-client`
     
 
 (Check requirements.txt for additional informations about requirments for installation)
@@ -41,4 +41,4 @@ Usage
 
 Run script with:
 
-`python3 gmail-delete.py`
+`python gmail-delete.py`
