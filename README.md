@@ -9,11 +9,11 @@ This script will help you delete unnecessary emails on gmail. It will provide yo
 Prerequisites
 -------------
 
- - Python3 
- - The [pip](https://pypi.python.org/pypi/pip) package managment tool for Python3
+ - Python
+ - The [pip](https://pypi.python.org/pypi/pip) package managment tool for Python
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
- - matplotlib for Python3 
+ - matplotlib for Python 
 
 
 Turn on Gmail API
