@@ -2,8 +2,8 @@ from google_client import GoogleClient
 import collections
 
 class GmailHandler:
-    def __init__(self):
-        self.google_client = GoogleClient()
+    def __init__(self, secret_file_path, arguments):
+        self.google_client = GoogleClient(secret_file_path, arguments)
         pass
 
 
@@ -186,5 +186,3 @@ class GmailHandler:
         plt.xticks(rotation = 'vertical')
         plt.tight_layout()
         plt.show()
-
-gmail = GmailHandler()

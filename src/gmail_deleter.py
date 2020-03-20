@@ -15,17 +15,21 @@ import matplotlib.pyplot as plt
 import collections
 
 from gmail_handler import GmailHandler
+import argparse
 
 
 try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+    arguments = argparse.ArgumentParser(parents=[tools.argparser], description='Mass mail deleter for Gmail')
+    arguments.add_argument('-s', '--secret', type=str, help='Path to the Google client secret json', required=False)
 except ImportError:
-    flags = None
+    arguments = None
+
 
 def main():
+    args = arguments.parse_args()
+    secret_file_path = args.secret
 
-    gmail = GmailHandler()
+    gmail = GmailHandler(secret_file_path, args)
 
     while True:
         print("""

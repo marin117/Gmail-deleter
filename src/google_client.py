@@ -14,16 +14,19 @@ import matplotlib.pyplot as plt
 import collections
 
 
+SCOPES = 'https://mail.google.com'
+APPLICATION_NAME = 'Gmail API Python'
+
 class GoogleClient:
-    def __init__(self):
+    def __init__(self, secret_file_path, arguments):
         """
         Constructor for GoogleClient object which calls Google mail API.
         """
-        self.credentials = self.get_credentials()
+        self.credentials = self.get_credentials(secret_file_path, arguments)
         self.http = self.credentials.authorize(httplib2.Http())
         self.service = discovery.build('gmail', 'v1', http=self.http)
 
-    def get_credentials(self):
+    def get_credentials(self, secret_file_path, arguments):
         """
         Gets valid user credentials from storage.
 
@@ -43,10 +46,10 @@ class GoogleClient:
         store = Storage(credential_path)
         credentials = store.get()
         if not credentials or credentials.invalid:
-            flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+            flow = client.flow_from_clientsecrets(secret_file_path, SCOPES)
             flow.user_agent = APPLICATION_NAME
-            if flags:
-                credentials = tools.run_flow(flow, store, flags)
+            if arguments:
+                credentials = tools.run_flow(flow, store, arguments)
             else:  # Needed only for compatibility with Python 2.6
                 credentials = tools.run(flow, store)
             print('Storing credentials to ' + credential_path)
