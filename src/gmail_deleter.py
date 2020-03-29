@@ -111,7 +111,7 @@ def main():
                     continue
                 while True:
                     try:
-                        temp = next(gmail.get_message_ids_label('me', labels[label_choice-1]['id']))
+                        temp = gmail.get_message_ids_label('me', labels[label_choice-1]['id'])
                         gmail.batch_delete('me', temp)
                     except StopIteration:
                         break

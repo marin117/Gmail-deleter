@@ -2,6 +2,7 @@ from google_client import GoogleClient
 from urllib.error import HTTPError
 import collections
 import json
+from apiclient import errors
 
 class GmailHandler:
     def __init__(self, secret_file_path, arguments):
