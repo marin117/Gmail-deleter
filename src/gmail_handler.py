@@ -1,5 +1,7 @@
 from google_client import GoogleClient
+from urllib.error import HTTPError
 import collections
+import json
 
 class GmailHandler:
     def __init__(self, secret_file_path, arguments):
@@ -26,7 +28,6 @@ class GmailHandler:
         label_result = self.google_client.service.users().labels().list(userId=user_id).execute()
         labels = label_result.get('labels', [])
         return labels
-
 
     def list_messages_with_label(self, user_id, label_ids=[]):
         """List all Messages of the user's mailbox with labelIds applied.
@@ -186,3 +187,52 @@ class GmailHandler:
         plt.xticks(rotation = 'vertical')
         plt.tight_layout()
         plt.show()
+
+    def get_message_ids_query(self, user_id, query=''):
+        try:
+            response = self.google_client.service.users().messages().list(userId=user_id,
+                                                       q=query).execute()
+            if 'messages' in response:
+                message_ids = []
+                for message in response['messages']:
+                    message_ids.append(message['id'])
+                yield message_ids
+
+            while 'nextPageToken' in response:
+                page_token = response['nextPageToken']
+                response = self.google_client.service.users().messages().list(userId=user_id, q=query,
+                                                           pageToken=page_token).execute()
+                message_ids = []
+                for message in response['messages']:
+                    message_ids.append(message['id'])
+                yield message_ids
+
+        except errors.HttpError as error:
+            print('An error occurred: %s' % error)
+
+    def get_message_ids_label(self, user_id, label_ids=[]):
+        try:
+            response = self.google_client.service.users().messages().list(userId=user_id,
+             labelIds=label_ids).execute()
+            if 'messages'in response:
+                message_ids = []
+                for message in response['messages']:
+                    message_ids.append(message['id'])
+                yield message_ids
+
+            while 'nextPageToken' in response:
+                page_token = response['nextPageToken']
+                response = self.google_client.service.users().messages().list(userId=user_id,
+                 labelIds=label_ids,
+                 pageToken=page_token).execute()
+                if 'messages'in response:
+                    message_ids = []
+                    for message in response['messages']:
+                        message_ids.append(message['id'])
+                    yield message_ids
+        except errors.HttpError as error:
+            print('An error occurred: %s' % error)
+
+    def batch_delete(self, user_id, message_ids=[]):
+        lista = json.dumps({'ids': message_ids})
+        self.google_client.service.users().messages().batchDelete(userId=user_id, body=lista)

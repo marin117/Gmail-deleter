@@ -39,7 +39,9 @@ def main():
 4. Empty trash
 5. Empty spam
 6. Statistics
-7. Exit
+7. Batch delete messages from category (EXPERIMENTAL!!!)
+8. Exit
+
         """)
         try:
             choice = int(input('Choose an option: '))
@@ -95,7 +97,24 @@ def main():
                         sys.exit(1)
                 except ValueError:
                     print('Invalid input! Try again')
-
+            elif choice == 7:
+                labels = gmail.get_labels('me')
+                for i, label in enumerate(labels):
+                    print(str(i+1) + ': ' + label['name'])
+                try:
+                    label_choice = int(input('Choose label for deletion: '))
+                    if label_choice <= 0 or label_choice >= len(labels) + 1:
+                        print("Invalid input! Try again")
+                        continue
+                except ValueError:
+                    print('Invalid input! Try again')
+                    continue
+                while True:
+                    try:
+                        temp = next(gmail.get_message_ids_label('me', labels[label_choice-1]['id']))
+                        gmail.batch_delete('me', temp)
+                    except StopIteration:
+                        break
             else:
                 sys.exit(1)
         except ValueError:
