@@ -109,12 +109,9 @@ def main():
                 except ValueError:
                     print('Invalid input! Try again')
                     continue
-                while True:
-                    try:
-                        temp = gmail.get_message_ids_label('me', labels[label_choice-1]['id'])
-                        gmail.batch_delete('me', temp)
-                    except StopIteration:
-                        break
+                messages = gmail.list_messages_with_label('me', labels[label_choice-1]['id'])
+                msg_ids = [msg['id'] for msg in messages]
+                delete = gmail.batch_delete('me', msg_ids)
             else:
                 sys.exit(1)
         except ValueError:

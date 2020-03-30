@@ -2,6 +2,7 @@ from google_client import GoogleClient
 from urllib.error import HTTPError
 import collections
 import json
+import time
 from apiclient import errors
 
 class GmailHandler:
@@ -211,29 +212,13 @@ class GmailHandler:
         except errors.HttpError as error:
             print('An error occurred: %s' % error)
 
-    def get_message_ids_label(self, user_id, label_ids=[]):
+    def batch_delete(self, user_id, message_ids=[]):
+        print(message_ids)
+        time.sleep(1.566)
         try:
-            response = self.google_client.service.users().messages().list(userId=user_id,
-             labelIds=label_ids).execute()
-            if 'messages'in response:
-                message_ids = []
-                for message in response['messages']:
-                    message_ids.append(message['id'])
-                yield message_ids
-
-            while 'nextPageToken' in response:
-                page_token = response['nextPageToken']
-                response = self.google_client.service.users().messages().list(userId=user_id,
-                 labelIds=label_ids,
-                 pageToken=page_token).execute()
-                if 'messages'in response:
-                    message_ids = []
-                    for message in response['messages']:
-                        message_ids.append(message['id'])
-                    yield message_ids
+            response = self.google_client.service.users().messages().batchDelete(userId=user_id, body=message_ids).execute()
+            print(response)
+            return response
         except errors.HttpError as error:
             print('An error occurred: %s' % error)
-
-    def batch_delete(self, user_id, message_ids=[]):
-        lista = json.dumps({'ids': message_ids})
-        self.google_client.service.users().messages().batchDelete(userId=user_id, body=lista)
+            self.batch_delete(user_id, message_ids)
