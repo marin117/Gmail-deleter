@@ -47,7 +47,7 @@ You can add extra options -s or --secret with a path to your "credentials.json" 
 
 `python gmail-delete.py -s credentials.json`
 
-The script provides the following options:
+The script provides the following options:  
  -deletion of all messages  
  -deletion of all messages from a certain category (i.e. Promotions, Forums, Social...)  
  -deletion of all messages from a certain user  
