@@ -38,7 +38,6 @@ def main():
 3. Delete messages from specific user
 4. Empty trash
 5. Empty spam
-6. Statistics
 7. Exit
         """)
         try:
@@ -73,29 +72,6 @@ def main():
             elif choice == 5:
                 for message in gmail.list_messages_with_label('me', 'SPAM'):
                     delete = gmail.delete_message_perm('me', message['id'])
-            elif choice == 6:
-                print("""
-1. Statistics for received mail
-2. Statistics for sent mail
-3. Statistics for received mail size
-4. Statistics for sent mail size
-        """)
-
-                try:
-                    statistic_choice = int(input('Choose an option: '))
-                    if statistic_choice == 1:
-                        gmail.get_statistic_for_user('me', 'INBOX', 'FROM')
-                    elif statistic_choice == 2:
-                        gmail.get_statistic_for_user('me', 'SENT', 'TO')
-                    elif statistic_choice == 3:
-                        gmail.get_statistics_for_mail_size('me', 'INBOX')
-                    elif statistic_choice == 4:
-                        gmail.get_statistics_for_mail_size('me', 'SENT')
-                    else:
-                        sys.exit(1)
-                except ValueError:
-                    print('Invalid input! Try again')
-
             else:
                 sys.exit(1)
         except ValueError:
