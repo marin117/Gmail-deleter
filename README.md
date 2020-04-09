@@ -41,11 +41,11 @@ Usage
 
 Run script with:
 
-`python gmail-delete.py`
+`python gmail_deleter.py`
 
 You can add extra options -s or --secret with a path to your "credentials.json" file.
 
-`python gmail-delete.py -s credentials.json`
+`python gmail_deleter.py -s credentials.json`
 
 The script provides the following options:  
  - deletion of all messages  
