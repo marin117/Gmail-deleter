@@ -39,7 +39,7 @@ Usage
  - Copy json file generated from Gmail API to the repository directory 
 
 
-Run script with:
+Run script inside *src* folder with:
 
 `python gmail_deleter.py`
 
