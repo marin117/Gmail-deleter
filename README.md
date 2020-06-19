@@ -3,14 +3,14 @@
 Getting started
 ---------------
 
-This script will help you delete unnecessary emails on gmail. It will provide you with options to delete all emails, emails from certain category and emails from a certain user . It also has additional features for emptying trash, deleteting spam emails, getting statistics for email size, or displaying frequency of sent/received emails to/from a certain user.
+This script will help you delete unnecessary emails on gmail. It will provide you with options to delete all emails, emails from certain category and emails from a certain user . It also has additional features for emptying trash, deleting spam emails, getting statistics for email size, or displaying frequency of sent/received emails to/from a certain user.
 
 
 Prerequisites
 -------------
 
  - Python
- - The [pip](https://pypi.python.org/pypi/pip) package managment tool for Python
+ - The [pip](https://pypi.python.org/pypi/pip) package management tool for Python
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
  - matplotlib for Python 
@@ -31,7 +31,7 @@ Installation
    `pip install --upgrade google-api-python-client`
     
 
-(Check requirements.txt for additional informations about requirments for installation)
+(Check requirements.txt for additional informations about requirements for installation)
 
 Usage
 -----
