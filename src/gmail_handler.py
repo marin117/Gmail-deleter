@@ -6,9 +6,8 @@ class GmailHandler:
         self.google_client = GoogleClient(secret_file_path, arguments)
         pass
 
-
     def delete_message(self, user_id, msg_id):
-      """Moves the message with the given msg_id to the trash folder.
+        """Moves the message with the given msg_id to the trash folder.
 
         Args:
             user_id: User's email address. The special value "me"
@@ -25,7 +24,7 @@ class GmailHandler:
             print('An error occurred: %s' % error)
 
     def delete_message_perm(self, user_id, msg_id):
-      """Completely deletes a message (instead of moving it to trash) with the given msg_id.
+        """Completely deletes a message (instead of moving it to trash) with the given msg_id.
 
         Args:
             user_id: User's email address. The special value "me"
@@ -43,7 +42,7 @@ class GmailHandler:
             print('An error occurred: %s' % error)
 
     def get_labels(self, user_id):
-      """Get a list of all labels in the user's mailbox.
+        """Get a list of all labels in the user's mailbox.
 
         Args:
         user_id: User's email address. The special value "me"
@@ -51,7 +50,7 @@ class GmailHandler:
 
         Returns:
         A list of all Labels in the user's mailbox.
-      """
+        """
         label_result = self.google_client.service.users().labels().list(userId=user_id).execute()
         labels = label_result.get('labels', [])
         return labels
