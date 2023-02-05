@@ -167,7 +167,7 @@ class GmailHandler:
 class GmailBulkHandler(GmailHandler):
     BATCH_SIZE = 1000
 
-    def delete_messages_perm(self, user_id, msgs):
+    def delete_messages_perm(self, user_id='me', msgs=None):
         """Permanently deletes the messages.
 
         Args:
@@ -178,6 +178,9 @@ class GmailBulkHandler(GmailHandler):
         Returns:
             None
         """
+        if msgs == None:
+            msgs = []
+
         msg_ids = []
         for msg in msgs:
             msg_ids.extend(msg['id'])
