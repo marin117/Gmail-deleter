@@ -16,6 +16,8 @@ MENU_TEXT = """
 4. Empty trash
 5. Empty spam
 7. Exit
+
+WARNING: All messages will be deleted permanently (not moved to Trash).
 """
 
 try:
