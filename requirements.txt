@@ -10,6 +10,7 @@ pyasn1-modules==0.2.1
 pyparsing==2.2.0
 python-dateutil==2.6.1
 pytz==2017.3
+tqdm==4.64.1
 rsa==4.7
 scipy==1.5.2
 six==1.11.0
