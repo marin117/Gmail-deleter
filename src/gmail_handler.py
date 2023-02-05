@@ -58,7 +58,7 @@ class GmailHandler:
         return labels
 
 
-    def list_messages_with_label(self, user_id, label_ids=[]):
+    def list_messages_with_label(self, user_id, label_ids=None):
         """List all Messages of the user's mailbox with labelIds applied.
 
         Args:
@@ -71,6 +71,9 @@ class GmailHandler:
           returned list contains Message IDs, you must use get with the
           appropriate id to get the details of a Message.
         """
+        if label_ids is None:
+            label_ids = []
+
         try:
             response = self.google_client.service.users().messages().list(userId=user_id,
              labelIds=label_ids).execute()
