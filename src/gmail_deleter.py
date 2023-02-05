@@ -8,6 +8,16 @@ from gmail_handler import GmailBulkHandler
 from oauth2client import tools
 
 
+INVALID_INPUT_TEXT = 'Invalid input! Try again'
+MENU_TEXT = """
+1. Delete all messages
+2. Delete messages from category
+3. Delete messages from specific user
+4. Empty trash
+5. Empty spam
+7. Exit
+"""
+
 try:
     arguments = argparse.ArgumentParser(parents=[tools.argparser], description='Mass mail deleter for Gmail')
     arguments.add_argument('-s', '--secret', type=str, help='Path to the Google client secret json', required=False)
@@ -22,14 +32,7 @@ def main():
     gmail = GmailBulkHandler(secret_file_path, args)
 
     while True:
-        print("""
-1. Delete all messages
-2. Delete messages from category
-3. Delete messages from specific user
-4. Empty trash
-5. Empty spam
-7. Exit
-        """)
+        print(MENU_TEXT)
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
@@ -42,10 +45,10 @@ def main():
                 try:
                     label_choice = int(input('Choose label for deletion: '))
                     if label_choice <= 0 or label_choice >= len(labels) + 1:
-                        print('Invalid input! Try again')
+                        print(INVALID_INPUT_TEXT)
                         continue
                 except ValueError:
-                    print('Invalid input! Try again')
+                    print(INVALID_INPUT_TEXT)
                 else:
                     messages = gmail.list_messages_with_label('me', labels[label_choice-1]['id'])
                     gmail.delete_messages_perm('me', messages)
@@ -62,7 +65,7 @@ def main():
             else:
                 sys.exit(1)
         except ValueError:
-            print('Invalid input! Try again')
+            print(INVALID_INPUT_TEXT)
 
 
 if __name__ == '__main__':
