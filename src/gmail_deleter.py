@@ -1,21 +1,11 @@
 
 from __future__ import print_function
-import httplib2
-import os
+
+import argparse
 import sys
 
-from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
-from oauth2client.file import Storage
-from apiclient import errors
-from apiclient.discovery import build
-
-import matplotlib.pyplot as plt
-import collections
-
 from gmail_handler import GmailBulkHandler
-import argparse
+from oauth2client import tools
 
 
 try:

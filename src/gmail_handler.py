@@ -1,5 +1,5 @@
 from google_client import GoogleClient
-import collections
+
 
 class GmailHandler:
     def __init__(self, secret_file_path, arguments):
