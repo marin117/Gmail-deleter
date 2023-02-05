@@ -1,4 +1,5 @@
 from apiclient import errors
+from tqdm import tqdm
 
 from google_client import GoogleClient
 
@@ -184,7 +185,7 @@ class GmailBulkHandler(GmailHandler):
             msgs = []
 
         msg_ids = []
-        for msg in msgs:
+        for msg in tqdm(msgs):
             msg_ids.extend(msg['id'])
             if len(msg_ids) == self.BATCH_SIZE:
                 self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()
