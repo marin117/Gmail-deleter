@@ -1,22 +1,24 @@
 
 from __future__ import print_function
-import httplib2
-import os
+
+import argparse
 import sys
 
-from apiclient import discovery
-from oauth2client import client
+from gmail_handler import GmailBulkHandler
 from oauth2client import tools
-from oauth2client.file import Storage
-from apiclient import errors
-from apiclient.discovery import build
 
-import matplotlib.pyplot as plt
-import collections
 
-from gmail_handler import GmailHandler
-import argparse
+INVALID_INPUT_TEXT = 'Invalid input! Try again'
+MENU_TEXT = """
+1. Delete all messages
+2. Delete messages from category
+3. Delete messages from specific user
+4. Empty trash
+5. Empty spam
+7. Exit
 
+WARNING: All messages will be deleted permanently (not moved to Trash).
+"""
 
 try:
     arguments = argparse.ArgumentParser(parents=[tools.argparser], description='Mass mail deleter for Gmail')
@@ -29,53 +31,43 @@ def main():
     args = arguments.parse_args()
     secret_file_path = args.secret
 
-    gmail = GmailHandler(secret_file_path, args)
+    gmail = GmailBulkHandler(secret_file_path, args)
 
     while True:
-        print("""
-1. Delete all messages
-2. Delete messages from category
-3. Delete messages from specific user
-4. Empty trash
-5. Empty spam
-7. Exit
-        """)
+        print(MENU_TEXT)
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = gmail.list_messages_matching_query(
-                    'me', 'label:all')
-                for message in messages:
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_matching_query('label:all')
+                gmail.delete_messages_perm(messages)
             elif choice == 2:
-                labels = gmail.get_labels('me')
+                labels = gmail.get_labels()
                 for i, label in enumerate(labels):
                     print(str(i+1) + ': ' + label['name'])
                 try:
                     label_choice = int(input('Choose label for deletion: '))
                     if label_choice <= 0 or label_choice >= len(labels) + 1:
-                        print("Invalid input! Try again")
+                        print(INVALID_INPUT_TEXT)
                         continue
                 except ValueError:
-                    print('Invalid input! Try again')
-                    continue
-                for message in gmail.list_messages_with_label('me', labels[label_choice-1]['id']):
-                    delete = gmail.delete_message('me', message['id'])
+                    print(INVALID_INPUT_TEXT)
+                else:
+                    messages = gmail.list_messages_with_label(labels[label_choice-1]['id'])
+                    gmail.delete_messages_perm(messages)
             elif choice == 3:
-                user_choice = str(
-                    input('Choose user whose messages you want to delete: '))
-                for message in gmail.list_messages_matching_query('me', 'from:' + user_choice):
-                    delete = gmail.delete_message('me', message['id'])
+                user_choice = str(input('Choose user whose messages you want to delete: '))
+                messages = gmail.list_messages_matching_query('from:' + user_choice)
+                gmail.delete_messages_perm(messages)
             elif choice == 4:
-                for message in gmail.list_messages_with_label('me', 'TRASH'):
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_with_label('TRASH')
+                gmail.delete_messages_perm(messages)
             elif choice == 5:
-                for message in gmail.list_messages_with_label('me', 'SPAM'):
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_with_label('SPAM')
+                gmail.delete_messages_perm(messages)
             else:
                 sys.exit(1)
         except ValueError:
-            print('Invalid input! Try again')
+            print(INVALID_INPUT_TEXT)
 
 
 if __name__ == '__main__':

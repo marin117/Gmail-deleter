@@ -1,21 +1,16 @@
 from __future__ import print_function
-import httplib2
+
 import os
-import sys
 
+import httplib2
 from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
+from oauth2client import client, tools
 from oauth2client.file import Storage
-from apiclient import errors
-from apiclient.discovery import build
-
-import matplotlib.pyplot as plt
-import collections
 
 
 SCOPES = 'https://mail.google.com'
 APPLICATION_NAME = 'Gmail API Python'
+
 
 class GoogleClient:
     def __init__(self, secret_file_path, arguments):
@@ -67,4 +62,4 @@ class GoogleClient:
         """
         http = httplib2.Http()
         http = self.credentials.authorize(http)
-        return build('gmail', 'v1', http=http)
+        return discovery.build('gmail', 'v1', http=http)
