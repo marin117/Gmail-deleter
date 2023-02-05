@@ -157,3 +157,28 @@ class GmailHandler:
                             value = value.rstrip('>')
                             return value
                         return values
+
+
+class GmailBulkHandler(GmailHandler):
+    BATCH_SIZE = 1000
+
+    def delete_messages_perm(self, user_id, msgs):
+        """Permanently deletes the messages.
+
+        Args:
+            user_id: User's email address. The special value "me"
+            can be used to indicate the authenticated user.
+            msgs: Messages to delete.
+
+        Returns:
+            None
+        """
+        msg_ids = []
+        for msg in msgs:
+            msg_ids.extend(msg['id'])
+            if len(msg_ids) == self.BATCH_SIZE:
+                self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()
+                msg_ids = []
+        # Check and delete the last batch.
+        if msg_ids:
+            self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()

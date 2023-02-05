@@ -13,7 +13,7 @@ Prerequisites
  - The [pip](https://pypi.python.org/pypi/pip) package management tool for Python
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
- - matplotlib for Python 
+ - matplotlib for Python
 
 
 Turn on Gmail API
@@ -24,19 +24,19 @@ Follow the [instructions](https://developers.google.com/gmail/api/quickstart/pyt
 Installation
 ------------
 
- - Optional: Create a virtual environment 
- 
- - Run: 
-   
+ - Optional: Create a virtual environment
+
+ - Run:
+
    `pip install --upgrade google-api-python-client`
-    
+
 
 (Check requirements.txt for additional informations about requirements for installation)
 
 Usage
 -----
 
- - Copy json file generated from Gmail API to the repository directory 
+ - Copy json file generated from Gmail API to the repository directory
 
 
 Run script inside *src* folder with:
@@ -47,11 +47,11 @@ You can add extra options -s or --secret with a path to your "credentials.json" 
 
 `python gmail_deleter.py -s credentials.json`
 
-The script provides the following options:  
- - deletion of all messages  
- - deletion of all messages from a certain category (i.e. Promotions, Forums, Social...)  
- - deletion of all messages from a certain user  
- - emptying trash  
- - emptying spam  
- 
-If one of the first three options are selected, those messages will be moved to the trash.
+The script provides the following options:
+ - deletion of all messages
+ - deletion of all messages from a certain category (i.e. Promotions, Forums, Social...)
+ - deletion of all messages from a certain user
+ - emptying trash
+ - emptying spam
+
+**WARNING:** All messages will be deleted permanently (**not** moved to **Trash**).

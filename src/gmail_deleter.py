@@ -14,7 +14,7 @@ from apiclient.discovery import build
 import matplotlib.pyplot as plt
 import collections
 
-from gmail_handler import GmailHandler
+from gmail_handler import GmailBulkHandler
 import argparse
 
 
@@ -29,7 +29,7 @@ def main():
     args = arguments.parse_args()
     secret_file_path = args.secret
 
-    gmail = GmailHandler(secret_file_path, args)
+    gmail = GmailBulkHandler(secret_file_path, args)
 
     while True:
         print("""
@@ -43,10 +43,8 @@ def main():
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = gmail.list_messages_matching_query(
-                    'me', 'label:all')
-                for message in messages:
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_matching_query('me', 'label:all')
+                gmail.delete_messages_perm('me', messages)
             elif choice == 2:
                 labels = gmail.get_labels('me')
                 for i, label in enumerate(labels):
@@ -54,24 +52,23 @@ def main():
                 try:
                     label_choice = int(input('Choose label for deletion: '))
                     if label_choice <= 0 or label_choice >= len(labels) + 1:
-                        print("Invalid input! Try again")
+                        print('Invalid input! Try again')
                         continue
                 except ValueError:
                     print('Invalid input! Try again')
-                    continue
-                for message in gmail.list_messages_with_label('me', labels[label_choice-1]['id']):
-                    delete = gmail.delete_message('me', message['id'])
+                else:
+                    messages = gmail.list_messages_with_label('me', labels[label_choice-1]['id'])
+                    gmail.delete_messages_perm('me', messages)
             elif choice == 3:
-                user_choice = str(
-                    input('Choose user whose messages you want to delete: '))
-                for message in gmail.list_messages_matching_query('me', 'from:' + user_choice):
-                    delete = gmail.delete_message('me', message['id'])
+                user_choice = str(input('Choose user whose messages you want to delete: '))
+                messages = gmail.list_messages_matching_query('me', 'from:' + user_choice)
+                gmail.delete_messages_perm('me', messages)
             elif choice == 4:
-                for message in gmail.list_messages_with_label('me', 'TRASH'):
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_with_label('me', 'TRASH')
+                gmail.delete_messages_perm('me', messages)
             elif choice == 5:
-                for message in gmail.list_messages_with_label('me', 'SPAM'):
-                    delete = gmail.delete_message_perm('me', message['id'])
+                messages = gmail.list_messages_with_label('me', 'SPAM')
+                gmail.delete_messages_perm('me', messages)
             else:
                 sys.exit(1)
         except ValueError:
