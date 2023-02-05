@@ -36,10 +36,10 @@ def main():
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = gmail.list_messages_matching_query('me', 'label:all')
+                messages = gmail.list_messages_matching_query('label:all')
                 gmail.delete_messages_perm(messages)
             elif choice == 2:
-                labels = gmail.get_labels('me')
+                labels = gmail.get_labels()
                 for i, label in enumerate(labels):
                     print(str(i+1) + ': ' + label['name'])
                 try:
@@ -50,17 +50,17 @@ def main():
                 except ValueError:
                     print(INVALID_INPUT_TEXT)
                 else:
-                    messages = gmail.list_messages_with_label('me', labels[label_choice-1]['id'])
+                    messages = gmail.list_messages_with_label(labels[label_choice-1]['id'])
                     gmail.delete_messages_perm(messages)
             elif choice == 3:
                 user_choice = str(input('Choose user whose messages you want to delete: '))
-                messages = gmail.list_messages_matching_query('me', 'from:' + user_choice)
+                messages = gmail.list_messages_matching_query('from:' + user_choice)
                 gmail.delete_messages_perm(messages)
             elif choice == 4:
-                messages = gmail.list_messages_with_label('me', 'TRASH')
+                messages = gmail.list_messages_with_label('TRASH')
                 gmail.delete_messages_perm(messages)
             elif choice == 5:
-                messages = gmail.list_messages_with_label('me', 'SPAM')
+                messages = gmail.list_messages_with_label('SPAM')
                 gmail.delete_messages_perm(messages)
             else:
                 sys.exit(1)
