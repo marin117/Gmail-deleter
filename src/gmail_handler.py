@@ -7,7 +7,6 @@ from google_client import GoogleClient
 class GmailHandler:
     def __init__(self, secret_file_path, arguments):
         self.google_client = GoogleClient(secret_file_path, arguments)
-        pass
 
     def delete_message(self, user_id='me', msg_id=None):
         """Moves the message with the given msg_id to the trash folder.
@@ -79,17 +78,17 @@ class GmailHandler:
 
         try:
             response = self.google_client.service.users().messages().list(userId=user_id,
-             labelIds=label_ids).execute()
-            if 'messages'in response:
+                                                                          labelIds=label_ids).execute()
+            if 'messages' in response:
                 for message in response['messages']:
                     yield message
 
             while 'nextPageToken' in response:
                 page_token = response['nextPageToken']
                 response = self.google_client.service.users().messages().list(userId=user_id,
-                 labelIds=label_ids,
-                 pageToken=page_token).execute()
-                if 'messages'in response:
+                                                                              labelIds=label_ids,
+                                                                              pageToken=page_token).execute()
+                if 'messages' in response:
                     for message in response['messages']:
                         yield message
         except errors.HttpError as error:
@@ -181,15 +180,17 @@ class GmailBulkHandler(GmailHandler):
         Returns:
             None
         """
-        if msgs == None:
+        if msgs is None:
             msgs = []
 
         msg_ids = []
         for msg in tqdm(msgs):
-            msg_ids.extend(msg['id'])
+            msg_ids.append(msg['id'])
             if len(msg_ids) == self.BATCH_SIZE:
-                self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()
+                self.google_client.service.users().messages().batchDelete(userId=user_id,
+                                                                          body={"ids": msg_ids}).execute()
                 msg_ids = []
         # Check and delete the last batch.
         if msg_ids:
-            self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()
+            self.google_client.service.users().messages().batchDelete(userId=user_id,
+                                                                 body={"ids": msg_ids}).execute()

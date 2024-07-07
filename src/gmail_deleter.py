@@ -15,6 +15,7 @@ MENU_TEXT = """
 3. Delete messages from specific user
 4. Empty trash
 5. Empty spam
+6. Delete messages from filter (format: <filter: value>)
 7. Exit
 
 WARNING: All messages will be deleted permanently (not moved to Trash).
@@ -38,8 +39,8 @@ def main():
         try:
             choice = int(input('Choose an option: '))
             if choice == 1:
-                messages = gmail.list_messages_matching_query('label:all')
-                gmail.delete_messages_perm(messages)
+                messages = gmail.list_messages_matching_query(query='label:all')
+                gmail.delete_messages_perm(msgs=messages)
             elif choice == 2:
                 labels = gmail.get_labels()
                 for i, label in enumerate(labels):
@@ -52,18 +53,22 @@ def main():
                 except ValueError:
                     print(INVALID_INPUT_TEXT)
                 else:
-                    messages = gmail.list_messages_with_label(labels[label_choice-1]['id'])
-                    gmail.delete_messages_perm(messages)
+                    messages = gmail.list_messages_with_label(label_ids=labels[label_choice-1]['id'])
+                    gmail.delete_messages_perm(msgs=messages)
             elif choice == 3:
                 user_choice = str(input('Choose user whose messages you want to delete: '))
-                messages = gmail.list_messages_matching_query('from:' + user_choice)
-                gmail.delete_messages_perm(messages)
+                messages = gmail.list_messages_matching_query(query=f"from: {user_choice}")
+                gmail.delete_messages_perm(msgs=messages)
             elif choice == 4:
-                messages = gmail.list_messages_with_label('TRASH')
-                gmail.delete_messages_perm(messages)
+                messages = gmail.list_messages_with_label(label_ids='TRASH')
+                gmail.delete_messages_perm(msgs=messages)
             elif choice == 5:
-                messages = gmail.list_messages_with_label('SPAM')
-                gmail.delete_messages_perm(messages)
+                messages = gmail.list_messages_with_label(label_ids='SPAM')
+                gmail.delete_messages_perm(msgs=messages)
+            elif choice == 6:
+                filter_choice = str(input('Choose filter for messages you want to delete: '))
+                messages = gmail.list_messages_matching_query(query=filter_choice)
+                gmail.delete_messages_perm(msgs=messages)
             else:
                 sys.exit(1)
         except ValueError:
