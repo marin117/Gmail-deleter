@@ -11,7 +11,7 @@ class GmailHandler:
     def __init__(self, secret_file_path, arguments):
         self.google_client = GoogleClient(secret_file_path, arguments)
 
-    def delete_message(self, user_id="me", msg_id=None):
+    def delete_message(self, user_id='me', msg_id=None):
         """Moves the message with the given msg_id to the trash folder.
 
         Args:
@@ -32,9 +32,9 @@ class GmailHandler:
                 )
                 return response
             except errors.HttpError as error:
-                print("An error occurred: %s" % error)
+                print('An error occurred: %s' % error)
 
-    def delete_message_perm(self, user_id="me", msg_id=None):
+    def delete_message_perm(self, user_id='me', msg_id=None):
         """Completely deletes a message (instead of moving it to trash) with the given msg_id.
 
         Args:
@@ -55,9 +55,9 @@ class GmailHandler:
                 )
                 return response
             except errors.HttpError as error:
-                print("An error occurred: %s" % error)
+                print('An error occurred: %s' % error)
 
-    def get_labels(self, user_id="me"):
+    def get_labels(self, user_id='me'):
         """Get a list of all labels in the user's mailbox.
 
         Args:
@@ -70,10 +70,10 @@ class GmailHandler:
         label_result = (
             self.google_client.service.users().labels().list(userId=user_id).execute()
         )
-        labels = label_result.get("labels", [])
+        labels = label_result.get('labels', [])
         return labels
 
-    def list_messages_with_label(self, user_id="me", label_ids=None):
+    def list_messages_with_label(self, user_id='me', label_ids=None):
         """List all Messages of the user's mailbox with labelIds applied.
 
         Args:
@@ -96,25 +96,25 @@ class GmailHandler:
                 .list(userId=user_id, labelIds=label_ids)
                 .execute()
             )
-            if "messages" in response:
-                for message in response["messages"]:
+            if 'messages' in response:
+                for message in response['messages']:
                     yield message
 
-            while "nextPageToken" in response:
-                page_token = response["nextPageToken"]
+            while 'nextPageToken' in response:
+                page_token = response['nextPageToken']
                 response = (
                     self.google_client.service.users()
                     .messages()
                     .list(userId=user_id, labelIds=label_ids, pageToken=page_token)
                     .execute()
                 )
-                if "messages" in response:
-                    for message in response["messages"]:
+                if 'messages' in response:
+                    for message in response['messages']:
                         yield message
         except errors.HttpError as error:
-            print("An error occurred: %s" % error)
+            print('An error occurred: %s' % error)
 
-    def list_messages_matching_query(self, user_id="me", query=None):
+    def list_messages_matching_query(self, user_id='me', query=None):
         """List all Messages of the user's mailbox matching the query.
 
         Args:
@@ -136,22 +136,22 @@ class GmailHandler:
                     .list(userId=user_id, q=query)
                     .execute()
                 )
-                if "messages" in response:
-                    for message in response["messages"]:
+                if 'messages' in response:
+                    for message in response['messages']:
                         yield message
 
-                while "nextPageToken" in response:
-                    page_token = response["nextPageToken"]
+                while 'nextPageToken' in response:
+                    page_token = response['nextPageToken']
                     response = (
                         self.google_client.service.users()
                         .messages()
                         .list(userId=user_id, q=query, pageToken=page_token)
                         .execute()
                     )
-                    for message in response["messages"]:
+                    for message in response['messages']:
                         yield message
             except errors.HttpError as error:
-                print("An error occurred: %s" % error)
+                print('An error occurred: %s' % error)
 
     def get_message(self, user_id, msg_id):
         """Get a Message with given ID.
@@ -176,7 +176,7 @@ class GmailHandler:
 
             return message
         except errors.HttpError as error:
-            print("An error occurred: %s" % error)
+            print('An error occurred: %s' % error)
 
     def get_sender(self, message, interest):
         """Get sender of an email.
@@ -187,22 +187,22 @@ class GmailHandler:
         Returns:
                 The sender of a given message.
         """
-        for sender in message["payload"]["headers"]:
-            if sender["name"].lower() == interest.lower():
-                sender_name = sender["value"].split(" ")
+        for sender in message['payload']['headers']:
+            if sender['name'].lower() == interest.lower():
+                sender_name = sender['value'].split(' ')
                 for values in sender_name:
-                    if "@" in values:
-                        if "<" in values:
-                            value = values.lstrip("<")
-                            value = value.rstrip(">")
+                    if '@' in values:
+                        if '<' in values:
+                            value = values.lstrip('<')
+                            value = value.rstrip('>')
                             return value
                         return values
 
-    def download_message(self, user_id="me", msg_id=None, download_dir="downloads"):
+    def download_message(self, user_id='me', msg_id=None, download_dir='downloads'):
         """Downloads a single message with attachments to local storage."""
 
         if msg_id is None:
-            return "Message ID is None."
+            return 'Message ID is None.'
 
         try:
 
@@ -211,7 +211,7 @@ class GmailHandler:
             message = (
                 self.google_client.service.users()
                 .messages()
-                .get(userId=user_id, id=msg_id, format="full")
+                .get(userId=user_id, id=msg_id, format='full')
                 .execute()
             )
 
@@ -223,68 +223,68 @@ class GmailHandler:
 
             # Extract message headers
 
-            headers = message.get("payload", {}).get("headers", [])
+            headers = message.get('payload', {}).get('headers', [])
 
             subject = next(
                 (
-                    header["value"]
+                    header['value']
                     for header in headers
-                    if header["name"].lower() == "subject"
+                    if header['name'].lower() == 'subject'
                 ),
-                "No Subject",
+                'No Subject',
             )
 
             date = next(
                 (
-                    header["value"]
+                    header['value']
                     for header in headers
-                    if header["name"].lower() == "date"
+                    if header['name'].lower() == 'date'
                 ),
-                "Unknown Date",
+                'Unknown Date',
             )
 
-            cleaned_subject = "".join([c if c.isalnum() else "_" for c in subject])
+            cleaned_subject = ''.join([c if c.isalnum() else '_' for c in subject])
 
-            filename_prefix = f"{download_dir}/{cleaned_subject}_{msg_id}"
+            filename_prefix = f'{download_dir}/{cleaned_subject}_{msg_id}'
 
             # Save metadata (subject, date)
 
-            with open(f"{filename_prefix}.meta.txt", "w") as meta_file:
+            with open(f'{filename_prefix}.meta.txt', 'w') as meta_file:
 
-                meta_file.write(f"Subject: {subject}\n")
+                meta_file.write(f'Subject: {subject}\n')
 
-                meta_file.write(f"Date: {date}\n\n")
+                meta_file.write(f'Date: {date}\n\n')
 
                 meta_file.write(
-                    f"Snippet: {message.get('snippet', 'No snippet available.')}\n"
+                    f'Snippet: {message.get('snippet', 'No snippet available.')}\n'
                 )
 
             # Download attachments and save
 
             self._process_message_parts(
-                message.get("payload", {}), filename_prefix, msg_id
+                message.get('payload', {}), filename_prefix, msg_id
             )
 
-            return f"Message {msg_id} downloaded successfully to {filename_prefix}."
+            return f'Message {msg_id} downloaded successfully to {filename_prefix}.'
 
         except errors.HttpError as error:
 
-            return f"Error downloading message {msg_id}: {error}"
+            return f'Error downloading message {msg_id}: {error}'
 
     def _process_message_parts(self, payload, filename_prefix, msg_id):
         """Processes parts of a message recursively to download attachments."""
 
-        if "parts" in payload:
+        if 'parts' in payload:
 
-            for part in payload["parts"]:
+            for part in payload['parts']:
 
                 self._process_message_parts(part, filename_prefix)
 
         # Download attachments
 
-        if payload.get("filename"):
+        if payload.get('filename'):
 
-            attachment_id = payload.get("body", {}).get("attachmentId")
+            attachment_id = payload.get('body', {}).get('attachmentId')
 
             if attachment_id:
 
@@ -292,24 +292,24 @@ class GmailHandler:
                     self.google_client.service.users()
                     .messages()
                     .attachments()
-                    .get(userId="me", messageId=msg_id, id=attachment_id)
+                    .get(userId='me', messageId=msg_id, id=attachment_id)
                     .execute()
                 )
 
-                data = base64.urlsafe_b64decode(attachment["data"])
+                data = base64.urlsafe_b64decode(attachment['data'])
 
                 with open(
-                    f"{filename_prefix}_{payload['filename']}", "wb"
+                    f'{filename_prefix}_{payload['filename']}', 'wb'
                 ) as attachment_file:
 
                     attachment_file.write(data)
 
-    def forward_message(self, user_id="me", msg_id=None, to_email=None):
+    def forward_message(self, user_id='me', msg_id=None, to_email=None):
         """Forwards a message to another email address."""
 
         if msg_id is None or to_email is None:
 
-            return "Message ID or recipient email is None."
+            return 'Message ID or recipient email is None.'
 
         try:
 
@@ -318,33 +318,33 @@ class GmailHandler:
             raw_message = (
                 self.google_client.service.users()
                 .messages()
-                .get(userId=user_id, id=msg_id, format="raw")
-                .execute()["raw"]
+                .get(userId=user_id, id=msg_id, format='raw')
+                .execute()['raw']
             )
 
             # Create and send forward message
 
             forward_payload = {
-                "raw": self._create_forward_message(raw_message, to_email)
+                'raw': self._create_forward_message(raw_message, to_email)
             }
 
             self.google_client.service.users().messages().send(
                 userId=user_id, body=forward_payload
             ).execute()
 
-            return f"Message {msg_id} forwarded successfully to {to_email}."
+            return f'Message {msg_id} forwarded successfully to {to_email}.'
 
         except errors.HttpError as error:
 
-            return f"Error forwarding message {msg_id}: {error}"
+            return f'Error forwarding message {msg_id}: {error}'
 
     def _create_forward_message(self, raw_message, to_email):
         """Creates a forward message from raw email content."""
 
-        msg = MIMEText("Forwarding email content")
-        msg["To"] = to_email
-        msg["From"] = "me"
-        msg["Subject"] = "FWD: Email content"
+        msg = MIMEText('Forwarding email content')
+        msg['To'] = to_email
+        msg['From'] = 'me'
+        msg['Subject'] = 'FWD: Email content'
         encoded_msg = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
         return encoded_msg
@@ -369,14 +369,14 @@ class GmailBulkHandler(GmailHandler):
 
         msg_ids = []
         for msg in tqdm(msgs):
-            msg_ids.append(msg["id"])
+            msg_ids.append(msg['id'])
             if len(msg_ids) == self.BATCH_SIZE:
                 self.google_client.service.users().messages().batchDelete(
-                    userId=user_id, body={"ids": msg_ids}
+                    userId=user_id, body={'ids': msg_ids}
                 ).execute()
                 msg_ids = []
         # Check and delete the last batch.
         if msg_ids:
             self.google_client.service.users().messages().batchDelete(
-                userId=user_id, body={"ids": msg_ids}
+                userId=user_id, body={'ids': msg_ids}
             ).execute()
