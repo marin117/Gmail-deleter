@@ -31,4 +31,4 @@ six==1.16.0
 subprocess32==3.5.4
 tqdm==4.66.4
 uritemplate==4.1.1
-urllib3==2.2.2
+urllib3==2.6.3
