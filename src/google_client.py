@@ -35,8 +35,7 @@ class GoogleClient:
         credential_dir = os.path.join(home_dir, '.credentials')
         if not os.path.exists(credential_dir):
             os.makedirs(credential_dir)
-        credential_path = os.path.join(credential_dir,
-                                       'gmail-delete.json')
+        credential_path = os.path.join(credential_dir, 'gmail-delete.json')
 
         store = Storage(credential_path)
         credentials = store.get()

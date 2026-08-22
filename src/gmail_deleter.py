@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 import argparse
@@ -44,7 +43,7 @@ def main():
             elif choice == 2:
                 labels = gmail.get_labels()
                 for i, label in enumerate(labels):
-                    print(str(i+1) + ': ' + label['name'])
+                    print(str(i + 1) + ': ' + label['name'])
                 try:
                     label_choice = int(input('Choose label for deletion: '))
                     if label_choice <= 0 or label_choice >= len(labels) + 1:
@@ -53,7 +52,7 @@ def main():
                 except ValueError:
                     print(INVALID_INPUT_TEXT)
                 else:
-                    messages = gmail.list_messages_with_label(label_ids=labels[label_choice-1]['id'])
+                    messages = gmail.list_messages_with_label(label_ids=labels[label_choice - 1]['id'])
                     gmail.delete_messages_perm(msgs=messages)
             elif choice == 3:
                 user_choice = str(input('Choose user whose messages you want to delete: '))

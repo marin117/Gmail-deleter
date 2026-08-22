@@ -3,7 +3,7 @@ name = "gmail-deleter"
 version = "0.1.0"
 description = "Permanently delete Gmail messages in bulk"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.14"
 license = "GPL-3.0-only"
 dependencies = [
     "google-api-python-client==2.136.0",
@@ -22,3 +22,13 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-dir = { "" = "src" }
 py-modules = ["gmail_deleter", "gmail_handler", "google_client"]
+
+[tool.black]
+line-length = 120
+target-version = ["py314"]
+skip-string-normalization = true
+
+[dependency-groups]
+dev = [
+    "black==25.11.0",
+]

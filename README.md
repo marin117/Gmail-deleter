@@ -9,7 +9,7 @@ This script will help you delete unnecessary emails on gmail. It will provide yo
 Prerequisites
 -------------
 
- - Python 3.9 or newer
+ - Python 3.14 or newer
  - The [uv](https://docs.astral.sh/uv/getting-started/installation/) Python package manager
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
@@ -26,6 +26,17 @@ Installation
 Install the locked dependencies:
 
 `uv sync --locked`
+
+Development
+-----------
+
+Format all Python files:
+
+`uv run black .`
+
+Check formatting without changing files:
+
+`uv run black --check .`
 
 Usage
 -----

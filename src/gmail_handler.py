@@ -39,8 +39,7 @@ class GmailHandler:
         """
         if msg_id is not None:
             try:
-                response = self.google_client.service.users().messages().delete(
-                    userId=user_id, id=msg_id).execute()
+                response = self.google_client.service.users().messages().delete(userId=user_id, id=msg_id).execute()
                 return response
             except errors.HttpError as error:
                 print('An error occurred: %s' % error)
@@ -59,7 +58,6 @@ class GmailHandler:
         labels = label_result.get('labels', [])
         return labels
 
-
     def list_messages_with_label(self, user_id='me', label_ids=None):
         """List all Messages of the user's mailbox with labelIds applied.
 
@@ -77,17 +75,19 @@ class GmailHandler:
             label_ids = []
 
         try:
-            response = self.google_client.service.users().messages().list(userId=user_id,
-                                                                          labelIds=label_ids).execute()
+            response = self.google_client.service.users().messages().list(userId=user_id, labelIds=label_ids).execute()
             if 'messages' in response:
                 for message in response['messages']:
                     yield message
 
             while 'nextPageToken' in response:
                 page_token = response['nextPageToken']
-                response = self.google_client.service.users().messages().list(userId=user_id,
-                                                                              labelIds=label_ids,
-                                                                              pageToken=page_token).execute()
+                response = (
+                    self.google_client.service.users()
+                    .messages()
+                    .list(userId=user_id, labelIds=label_ids, pageToken=page_token)
+                    .execute()
+                )
                 if 'messages' in response:
                     for message in response['messages']:
                         yield message
@@ -110,18 +110,21 @@ class GmailHandler:
         """
         if query is not None:
             try:
-                response = self.google_client.service.users().messages().list(userId=user_id,
-                                                        q=query).execute()
+                response = self.google_client.service.users().messages().list(userId=user_id, q=query).execute()
                 if 'messages' in response:
                     for message in response['messages']:
                         yield message
 
                 while 'nextPageToken' in response:
                     page_token = response['nextPageToken']
-                    response = self.google_client.service.users().messages().list(userId=user_id, q=query,
-                                                            pageToken=page_token).execute()
+                    response = (
+                        self.google_client.service.users()
+                        .messages()
+                        .list(userId=user_id, q=query, pageToken=page_token)
+                        .execute()
+                    )
                     for message in response['messages']:
-                            yield message
+                        yield message
             except errors.HttpError as error:
                 print('An error occurred: %s' % error)
 
@@ -187,10 +190,10 @@ class GmailBulkHandler(GmailHandler):
         for msg in tqdm(msgs):
             msg_ids.append(msg['id'])
             if len(msg_ids) == self.BATCH_SIZE:
-                self.google_client.service.users().messages().batchDelete(userId=user_id,
-                                                                          body={"ids": msg_ids}).execute()
+                self.google_client.service.users().messages().batchDelete(
+                    userId=user_id, body={"ids": msg_ids}
+                ).execute()
                 msg_ids = []
         # Check and delete the last batch.
         if msg_ids:
-            self.google_client.service.users().messages().batchDelete(userId=user_id,
-                                                                 body={"ids": msg_ids}).execute()
+            self.google_client.service.users().messages().batchDelete(userId=user_id, body={"ids": msg_ids}).execute()
