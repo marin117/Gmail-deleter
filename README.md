@@ -9,11 +9,10 @@ This script will help you delete unnecessary emails on gmail. It will provide yo
 Prerequisites
 -------------
 
- - Python
- - The [pip](https://pypi.python.org/pypi/pip) package management tool for Python
+ - Python 3.9 or newer
+ - The [uv](https://docs.astral.sh/uv/getting-started/installation/) Python package manager
  - Access to Internet and a web browser
  - A Google account with Gmail account enabled
- - matplotlib for Python
 
 
 Turn on Gmail API
@@ -24,14 +23,9 @@ Follow the [instructions](https://developers.google.com/gmail/api/quickstart/pyt
 Installation
 ------------
 
- - Optional: Create a virtual environment
+Install the locked dependencies:
 
- - Run:
-
-   `pip install --upgrade google-api-python-client`
-
-
-(Check requirements.txt for additional informations about requirements for installation)
+`uv sync --locked`
 
 Usage
 -----
@@ -39,13 +33,13 @@ Usage
  - Copy json file generated from Gmail API to the repository directory
 
 
-Run script inside *src* folder with:
+Run the script from the repository directory with:
 
-`python gmail_deleter.py`
+`uv run gmail-deleter`
 
 You can add extra options -s or --secret with a path to your "credentials.json" file.
 
-`python gmail_deleter.py -s credentials.json`
+`uv run gmail-deleter -s credentials.json`
 
 The script provides the following options:
  - delete all messages
