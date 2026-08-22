@@ -6,7 +6,6 @@ import sys
 from gmail_handler import GmailBulkHandler
 from oauth2client import tools
 
-
 INVALID_INPUT_TEXT = 'Invalid input! Try again'
 MENU_TEXT = """
 1. Delete all messages

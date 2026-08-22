@@ -7,7 +7,6 @@ from apiclient import discovery
 from oauth2client import client, tools
 from oauth2client.file import Storage
 
-
 SCOPES = 'https://mail.google.com'
 APPLICATION_NAME = 'Gmail API Python'
 
